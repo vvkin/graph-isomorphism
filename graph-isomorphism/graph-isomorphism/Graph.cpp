@@ -7,8 +7,8 @@ using std::vector;
 Graph::Graph(const int vertices_num, const int edges_num, Edge* edges_list){
 	this->vertices_num = vertices_num;
 	this->edges_num = edges_num;
-	this->edges_list = new Edge[this->vertices_num];
-	for (auto i = 0; i < vertices_num; ++i)
+	this->edges_list = new Edge[this->edges_num];
+	for (auto i = 0; i < edges_num; ++i)
 		this->edges_list[i] = edges_list[i];
 }
 
@@ -32,11 +32,11 @@ Graph Graph::delete_edge(const int begin, const int end){
 	auto iterator = 0;
 
 	for (auto i = 0; i < this->edges_num; ++i) {
-		if (this->edges_list[i].in != begin && this->edges_list[i].out != end) {
-			new_edges_list[iterator++] = this->edges_list[i];
-		}
+		if (this->edges_list[i].out == begin && this->edges_list[i].in == end) continue;
+		new_edges_list[iterator] = this->edges_list[i]; ++iterator;
 	}
-	return Graph(this->vertices_num, this->edges_num-(this->edges_num-iterator), new_edges_list);
+
+	return Graph(this->vertices_num, iterator, new_edges_list);
 }
 
 void Graph::get_info(){
@@ -45,13 +45,13 @@ void Graph::get_info(){
 	cout << "Edges number : " << this->edges_num << '\n';
 	cout << "Edges : \n";
 	for (auto i = 0; i < this->edges_num; ++i) {
-		cout << this->edges_list[i].in << " " << this->edges_list[i].out << '\n';
+		cout << this->edges_list[i].out + 1 << " " << this->edges_list[i].in + 1 << '\n';
 	}
 }
 
 vector<vector<int> > Graph::create_adjacency_list(){
 	vector<vector<int>> adj_list(this->vertices_num);
-	for (auto i = 0; i < this->vertices_num; ++i) {
+	for (auto i = 0; i < this->edges_num; ++i) {
 		adj_list[this->edges_list[i].in].push_back(this->edges_list[i].out);
 		adj_list[this->edges_list[i].out].push_back(this->edges_list[i].in);
 	}

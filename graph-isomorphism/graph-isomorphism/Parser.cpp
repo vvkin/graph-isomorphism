@@ -3,18 +3,19 @@
 
 Graph Parser::parse(const char* file_name) {
 
-	Edge* edges_list;
-	int vertices_num;
-	int edges_num;
+	int vertices_num, edges_num;
 	std::ifstream file_handler(file_name);
 
 	file_handler >> vertices_num >> edges_num;
-	edges_list = new Edge[vertices_num];
+	auto* edges_list = new Edge[edges_num];
 
 	for (auto i = 0; i < edges_num; ++i) {
-		Edge edge{};
-		file_handler >> --edge.in >> --edge.out;
+		Edge edge = {};
+		file_handler >> edge.out >> edge.in;
+		--edge.in; --edge.out;
 		edges_list[i] = edge;
 	}
+
+	file_handler.close();
 	return Graph(vertices_num, edges_num, edges_list);
 }

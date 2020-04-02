@@ -1,0 +1,142 @@
+#include "Algorithm.h"
+#include <queue>
+#include <set>
+
+using std::queue;
+using std::set;
+using std::vector;
+
+
+template<typename T>
+T* Algorithm::create_a(const T filler, const int size) {
+	auto* array = new T[size];
+	for (auto i = 0; i < size; ++i) {
+		array[i] = filler; // What is it?
+	}
+	return array;
+}
+
+template<typename T>
+T** Algorithm::create_m(const T filler, const int size) {
+	auto** matrix = new T * [size];
+	for (auto i = 0; i < size; ++i) {
+		matrix[i] = new T[size];
+	}
+	for (auto i = 0; i < size; ++i) {
+		for (auto j = 0; j < size; ++j) {
+			matrix[i][j] = filler;
+		}
+	}
+	return matrix;
+}
+
+bfs_result Algorithm::bfs(Graph graph, int start) {
+
+	auto* visit = create_a(false, graph.vertices_num);
+	auto adj_list = graph.create_adjacency_list();
+	auto* dist = create_a(infinity, graph.vertices_num);
+	auto* prev = create_a(-infinity, graph.vertices_num);
+
+	queue<int> q;
+	q.push(start);
+	dist[start] = 0;
+	visit[start] = true;
+
+	while (!q.empty()) {
+		const auto parent = q.front();
+		for (auto& child : adj_list[parent]) {
+			const auto new_dist = dist[parent] + 1;
+			if (!visit[child]) {
+				visit[child] = true;
+				dist[child] = new_dist;
+				prev[child] = parent;
+				q.push(child);
+			}
+		}
+		q.pop();
+	}
+
+	auto* path = create_a(vector<int>(), graph.vertices_num);
+	for (auto i = 0; i < graph.vertices_num; ++i) {
+		if (i == start) {
+			path[i].push_back(start);
+		}
+		else if (prev[i] == -infinity) {
+			path[i] = {};
+		}
+		else {
+			for (auto at = prev[i]; at != start;) {
+				path[i].push_back(at);
+				at = prev[at];
+			}
+			path[i].push_back(start);
+			reverse(begin(path[i]), end(path[i]));
+		}
+	}
+
+	delete[] visit;
+	delete[] prev;
+
+	return { dist, path };
+}
+
+
+element** Algorithm::get_sign_matrix(Graph graph) {
+	auto** sign_m = create_m(element(), graph.vertices_num);
+	int** adj_m = graph.get_adjacency_matrix();
+	vector<vector<int>> adj_l = graph.create_adjacency_list();
+
+	for (auto i = 0; i < graph.vertices_num; ++i){
+		for (auto j = 0; j < graph.vertices_num; ++j) {
+			element object = {};
+
+			object.sign = adj_m[i][j] ? sign::plus : sign::minus;
+
+			const auto start = bfs(graph, i);
+			const auto end = bfs(graph, j);
+
+			object.distance = start.distance[j];
+
+			set<int> pair_graph;
+			for (auto k = 0; k < graph.vertices_num; ++k) {
+				if (start.path[k].back() != end.path[k].back() || int(start.path[k].size()
+					+ end.path[k].size()) != object.distance) continue;
+
+				for (auto& item : start.path[k]) {
+					if (pair_graph.find(item) == pair_graph.end()) {
+						pair_graph.insert(item);
+					}
+				}
+
+				for (auto& item : end.path[k]) {
+					if (pair_graph.find(item) == pair_graph.end()) {
+						pair_graph.insert(item);
+					}
+				}
+			}
+
+			object.vertices = pair_graph.size();
+
+			for (auto& node : pair_graph) {
+				for (auto& neighbor : adj_l[node]) {
+					if (pair_graph.find(neighbor) != pair_graph.end()) {
+						++object.edges;
+					}
+				}
+			}
+
+			delete[] start.path; delete start.distance;
+			delete[] end.path; delete[] end.distance;
+
+			sign_m[i][j] = object;
+		}
+	}
+	return sign_m;
+}
+
+
+
+
+
+
+

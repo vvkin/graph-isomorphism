@@ -4,6 +4,6 @@
 class Parser
 {
 public:
-	static Graph Parse(char*);
+	static Graph parse(const char*);
 };
 

@@ -11,7 +11,7 @@ Graph Parser::parse(const char* file_name) {
 	file_handler >> vertices_num >> edges_num;
 	edges_list = new Edge[vertices_num];
 
-	for (int i = 0; i < edges_num; ++i) {
+	for (auto i = 0; i < edges_num; ++i) {
 		Edge edge{};
 		file_handler >> --edge.in >> --edge.out;
 		edges_list[i] = edge;

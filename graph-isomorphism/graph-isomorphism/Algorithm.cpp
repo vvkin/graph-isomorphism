@@ -11,12 +11,12 @@ template<typename T>
 T* Algorithm::create_a(const T filler, const int size) {
 	auto* array = new T[size];
 	for (auto i = 0; i < size; ++i) {
-		array[i] = filler; // What is it?
+		array[i] = filler;
 	}
 	return array;
 }
 
-bfs_result Algorithm::bfs(Graph& graph, int start) {
+bfs_result Algorithm::bfs(Graph& graph, const int start) {
 
 	auto* visit = create_a(false, graph.vertices_num);
 	auto adj_list = graph.create_adjacency_list();
@@ -69,22 +69,23 @@ bfs_result Algorithm::bfs(Graph& graph, int start) {
 
 element** Algorithm::get_sign_matrix(Graph& graph) {
 	auto** sign_m = graph.create_m(element());
-	int** adj_m = graph.get_adjacency_matrix();
-	vector<vector<int>> adj_l = graph.create_adjacency_list();
+	auto** adj_m = graph.get_adjacency_matrix();
+	auto adj_l = graph.create_adjacency_list();
 
 	for (auto i = 0; i < graph.vertices_num; ++i){
 		for (auto j = 0; j < graph.vertices_num; ++j) {
 			element object = {};
 
-			object.sign = adj_m[i][j] ? sign::plus : sign::minus;
+			object.sign = adj_m[i][j] ? plus : minus;
 
-			const auto start = bfs(graph, i);
-			const auto end = bfs(graph, j);
+			auto new_graph = graph.delete_edge(i, j);
+			const auto start = bfs(new_graph, i);
+			const auto end = bfs(new_graph, j);
 
 			object.distance = start.distance[j];
 
 			set<int> pair_graph;
-			for (auto k = 0; k < graph.vertices_num; ++k) {
+			for (auto k = 0; k < new_graph.vertices_num; ++k) {
 				if (start.path[k].back() != end.path[k].back() || int(start.path[k].size()
 					+ end.path[k].size()) != object.distance) continue;
 

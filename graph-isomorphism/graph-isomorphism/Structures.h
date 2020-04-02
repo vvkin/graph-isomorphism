@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <sstream>
+#include <iostream>
 
 const int infinity = INT16_MAX;
 
@@ -27,18 +28,23 @@ struct element {
 
 	int number() const {
 		std::stringstream in;
-		in << (sign == sign::plus ? "+" : "-");
+		in << (sign == plus ? "+" : "-");
 		in << distance << vertices << edges;
 		return stoi(in.str());
 	}
 
+	bool operator!=(const element& other) const {
+		return this->number() != other.number();
+	}
+
+	std::ostream& operator<<(std::ostream& out) const {
+		out << (this->sign == plus ? "+" : "-") << this->distance
+			<< "." << this->vertices << "." << this->edges;
+		return out;
+	}
+	
 	sign sign;
 	int distance;
 	int vertices;
 	int edges;
 };
-
-
-
-
-

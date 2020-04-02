@@ -58,8 +58,9 @@ vector<vector<int> > Graph::create_adjacency_list(){
 	return adj_list;
 }
 
+
 int** Graph::get_adjacency_matrix() {
-	int** adj_m = Algorithm::create_m(0, this->vertices_num);
+	int** adj_m = this->create_m(0);
 	for (auto i = 0; i < this->edges_num; ++i) {
 		if (this->edges_list[i].out == this->edges_list[i].in) continue;
 		adj_m[this->edges_list[i].out][this->edges_list[i].in] = 1;

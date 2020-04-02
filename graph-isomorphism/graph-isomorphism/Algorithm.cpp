@@ -16,21 +16,7 @@ T* Algorithm::create_a(const T filler, const int size) {
 	return array;
 }
 
-template<typename T>
-T** Algorithm::create_m(const T filler, const int size) {
-	auto** matrix = new T * [size];
-	for (auto i = 0; i < size; ++i) {
-		matrix[i] = new T[size];
-	}
-	for (auto i = 0; i < size; ++i) {
-		for (auto j = 0; j < size; ++j) {
-			matrix[i][j] = filler;
-		}
-	}
-	return matrix;
-}
-
-bfs_result Algorithm::bfs(Graph graph, int start) {
+bfs_result Algorithm::bfs(Graph& graph, int start) {
 
 	auto* visit = create_a(false, graph.vertices_num);
 	auto adj_list = graph.create_adjacency_list();
@@ -81,8 +67,8 @@ bfs_result Algorithm::bfs(Graph graph, int start) {
 }
 
 
-element** Algorithm::get_sign_matrix(Graph graph) {
-	auto** sign_m = create_m(element(), graph.vertices_num);
+element** Algorithm::get_sign_matrix(Graph& graph) {
+	auto** sign_m = graph.create_m(element());
 	int** adj_m = graph.get_adjacency_matrix();
 	vector<vector<int>> adj_l = graph.create_adjacency_list();
 

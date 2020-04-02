@@ -1,11 +1,5 @@
 #pragma once
-#include <vector>
-#include "Algorithm.h";
-
-struct Edge {
-	int in;
-	int out;
-};
+#include "Structures.h"
 
 class Graph {
 private:
@@ -23,7 +17,24 @@ public:
 	void get_info();
 	std::vector<std::vector<int>> create_adjacency_list();
 	int** get_adjacency_matrix();
+	template<typename T>
+	T** create_m(const T);
 
 	friend class Algorithm;
 };
 
+
+template<typename T>
+inline T** Graph::create_m(const T filler)
+{
+	auto** matrix = new T * [this->vertices_num];
+	for (auto i = 0; i < this->vertices_num; ++i) {
+		matrix[i] = new T[this->vertices_num];
+	}
+	for (auto i = 0; i < this->vertices_num; ++i) {
+		for (auto j = 0; j < this->vertices_num; ++j) {
+			matrix[i][j] = filler;
+		}
+	}
+	return matrix;
+}

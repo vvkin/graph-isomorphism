@@ -1,7 +1,9 @@
 #include "Graph.h"
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <queue>
+#include <set>
 using namespace std;
 
 const int infinity = INT16_MAX;
@@ -95,6 +97,91 @@ bfs_result bfs(vector<vector<int>>& adj_l, const int size, const int start) {
 	delete[] prev;
 
 	return { dist, path };
+}
+
+int** create_adjacency_matrix(edge* edges, const int vertex, const int edge_amount) {
+	auto** adj_m = create_m(0, vertex);
+	for (auto i = 0; i < edge_amount; ++i) {
+		if (edges[i].out == edges[i].in) continue;
+		adj_m[edges[i].out][edges[i].in] = 1;
+		adj_m[edges[i].in][edges[i].out] = 1;
+	}
+	return adj_m;
+}
+
+enum sign {
+	minus, plus
+};
+
+struct element {
+	element() = default;
+
+	element(const sign s, const int d, const int v, const int e)
+		: sign(s), distance(d), vertices(v), edges(e) {}
+
+	int number() const {
+		stringstream in;
+		in << (sign == sign::plus ? "+" : "-");
+		in << distance << vertices << edges;
+		return stoi(in.str());
+	}
+
+	sign sign;
+	int distance;
+	int vertices;
+	int edges;
+};
+
+element** get_sign_matrix(int** adg_m, vector<vector<int>>& adj_l, edge* edges, const int vertex) {
+	auto** sign_m = create_m(element(), vertex);
+
+	for (auto i = 0; i < vertex; ++i) {
+		for (auto j = 0; j < vertex; ++j) {
+			element object = {};
+
+			object.sign = adg_m[i][j] ? sign::plus : sign::minus;
+
+			const auto start = bfs(adj_l, vertex, i);
+			const auto end = bfs(adj_l, vertex, j);
+
+			object.distance = start.distance[j];
+
+			set<int> pair_graph;
+			for (auto k = 0; k < vertex; ++k) {
+				if (start.path[k].back() != end.path[k].back() || int(start.path[k].size()
+					+ end.path[k].size()) != object.distance) continue;
+
+				for (auto& item : start.path[k]) {
+					if (pair_graph.find(item) == pair_graph.end()) {
+						pair_graph.insert(item);
+					}
+				}
+
+				for (auto& item : end.path[k]) {
+					if (pair_graph.find(item) == pair_graph.end()) {
+						pair_graph.insert(item);
+					}
+				}
+			}
+
+			object.vertices = pair_graph.size();
+
+			for (auto& node : pair_graph) {
+				for (auto& neighbor : adj_l[node]) {
+					if (pair_graph.find(neighbor) != pair_graph.end()) {
+						++object.edges;
+					}
+				}
+			}
+
+			delete[] start.path; delete start.distance;
+			delete[] end.path; delete[] end.distance;
+
+			sign_m[i][j] = object;
+		}
+	}
+
+	return sign_m;
 }
 
 Graph::Graph(int vertices_num, int edges_num, Edge* edges_list){

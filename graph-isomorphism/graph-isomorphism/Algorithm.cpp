@@ -121,6 +121,11 @@ element** Algorithm::get_sign_matrix(Graph& graph) {
 	return sign_m;
 }
 
+bool Algorithm::is_isomorphic(Graph& A, Graph& B) {
+	//Call all function to check are graphs isomorphic
+	return true;
+}
+
 
 
 

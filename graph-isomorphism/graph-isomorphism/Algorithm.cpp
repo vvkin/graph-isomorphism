@@ -1,7 +1,7 @@
 #include "Algorithm.h"
+#include "Printer.h"
 #include <queue>
 #include <set>
-#include "Printer.h"
 #include <iostream>
 #include <string>
 
@@ -158,35 +158,20 @@ std::vector<element> Algorithm::get_lexicographical_order(Graph& graph) {
 
 
 int* Algorithm::get_sort_order(Graph& graph) {
-	auto lexic_order = Algorithm::get_lexicographical_order(graph);
-	auto** sign_m = Algorithm::get_sign_matrix(graph);
 	const auto size = graph.vertices_num;
-	int** frequency_vector = new int* [lexic_order.size()];
 	int* sort_order = new int[size];
+	auto** frequency_vector = Algorithm::get_frequency_vector(graph);
+	const auto row_size = sizeof(*frequency_vector) / sizeof(int*);
 
 	for (auto i = 0; i < size; ++i) {
-		frequency_vector[i] = new int[size];
 		sort_order[i] = i;
 	}
 	
-	for (auto i = 0; i < lexic_order.size(); ++i)
-		for (auto j = 0; j < size; ++j)
-			frequency_vector[i][j] = 0;
-
-	for (auto k = 0; k < lexic_order.size(); ++k) {
-		for (auto i = 0; i < size; ++i) {
-			for (auto j = 0; j < size; ++j) {
-				if (sign_m[i][j].number() == lexic_order[k].number())
-					++frequency_vector[k][i];
-			}
-		}
-	}
-
 	std::string* col_num = new std::string[size];
 	for (auto i = 0; i < size; ++i) col_num[i] = "";
 
 	for (auto j = 0; j < size; ++j) {
-		for (auto i = 0; i < lexic_order.size(); ++i) {
+		for (auto i = 0; i < row_size; ++i) {
 			col_num[j] += std::to_string(frequency_vector[i][j]);
 		}
 	}
@@ -251,4 +236,34 @@ void Algorithm::swap_procedure(Graph& a, Graph& b) {
 			}
 		}
 	}
+}
+
+int** Algorithm::get_frequency_vector(Graph& graph)
+{
+	auto lexic_order = Algorithm::get_lexicographical_order(graph);
+	auto** sign_m = Algorithm::get_sign_matrix(graph);
+	const auto size = graph.vertices_num;
+	int** frequency_vector = new int* [lexic_order.size()];
+
+	for(auto i = 0; i < size; ++i) frequency_vector[i] = new int[size];
+
+	for (auto i = 0; i < lexic_order.size(); ++i)
+		for (auto j = 0; j < size; ++j)
+			frequency_vector[i][j] = 0;
+
+	for (auto k = 0; k < lexic_order.size(); ++k) {
+		for (auto i = 0; i < size; ++i) {
+			for (auto j = 0; j < size; ++j) {
+				if (sign_m[i][j].number() == lexic_order[k].number())
+					++frequency_vector[k][i];
+			}
+		}
+	}
+
+	return frequency_vector;
+}
+
+bool Algorithm::main_procedure(Graph&)
+{
+	return false;
 }

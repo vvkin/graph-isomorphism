@@ -7,7 +7,7 @@
 int main() {
 	auto graph_a = Parser::parse("graph_a.txt");
 	auto graph_b = Parser::parse("graph_b.txt");
-	const auto matrix_a = Algorithm::get_sign_matrix(graph_a);
+	/*const auto matrix_a = Algorithm::get_sign_matrix(graph_a);
 	const auto matrix_b = Algorithm::get_sign_matrix(graph_b);
 	Printer::print_matrix(matrix_a, 8,8);
 	Printer::print_matrix(matrix_b, 8, 8);
@@ -23,5 +23,7 @@ int main() {
 	auto** sorted_sign_m_b = Algorithm::get_canonical_form(graph_b);
 	Printer::print_matrix(sorted_sign_m_a, 8, 8);
 	Printer::print_matrix(sorted_sign_m_b, 8, 8);
-	Algorithm::swap_procedure(graph_a, graph_b);
+	Algorithm::swap_procedure(graph_a, graph_b);*/
+	if (Algorithm::is_isomorphic(graph_a, graph_b)) cout << "Graphs are isomorphic\n";
+	else cout << "Graphs are not isomorphic";
 }

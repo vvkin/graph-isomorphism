@@ -128,8 +128,7 @@ element** Algorithm::get_sign_matrix(Graph& graph) {
 }
 
 bool Algorithm::is_isomorphic(Graph& A, Graph& B) {
-	//Call all function to check are graphs isomorphic
-	return true;
+	return (Algorithm::main_procedure(A, B));
 }
 
 
@@ -208,7 +207,18 @@ element** Algorithm::get_canonical_form(Graph& graph)
 }
 
 
-void Algorithm::swap_procedure(Graph& a, Graph& b) {
+template<typename T>
+bool equals(T** lhs, T** rhs, const int row_size, const int col_size) {
+	for (auto i = 0; i < row_size; ++i) {
+		for (auto j = 0; j < col_size; ++j) {
+			if (lhs[i][j] != rhs[i][j])
+				return false;
+		}
+	}
+	return true;
+}
+
+ bool Algorithm::swap_procedure(Graph& a, Graph& b) {
 
 	auto** canon_m_a = Algorithm::get_canonical_form(a);
 	auto** canon_m_b = Algorithm::get_canonical_form(b);
@@ -236,10 +246,12 @@ void Algorithm::swap_procedure(Graph& a, Graph& b) {
 			}
 		}
 	}
-	Printer::print_matrix(canon_m_a, 8, 8);
+	return equals(canon_m_a, canon_m_b, size, size);
+
+	/*Printer::print_matrix(canon_m_a, 8, 8);
 	Printer::print_matrix(canon_m_b, 8, 8);
 	Printer::print_array(get_sort_order(a), 8);
-	Printer::print_array(perm_b, 8);
+	Printer::print_array(perm_b, 8);*/
 }
 
 int** Algorithm::get_frequency_vector(Graph& graph)
@@ -263,21 +275,40 @@ int** Algorithm::get_frequency_vector(Graph& graph)
 			}
 		}
 	}
-
 	return frequency_vector;
 }
 
-bool equals(element** lhs, element** rhs, const int size) {
-	for (auto i = 0; i < size; ++i) {
-		for (auto j = 0; j < size; ++j) {
-			if (lhs[i][j] != rhs[i][j])
-				return false;
+
+int** Algorithm::get_sorted_frequency_vector(Graph& graph) {
+	auto** frequency_vector = Algorithm::get_frequency_vector(graph);
+	auto sort_order = Algorithm::get_sort_order(graph);
+	const auto row_size = sizeof(*frequency_vector) / sizeof(int*);
+	const auto col_size = sizeof(**frequency_vector) / sizeof(int*);
+	int** sorted_freq = new int* [row_size];
+
+	for (auto i = 0; i < row_size; ++i) sorted_freq[i] = new int[col_size];
+
+	for (auto i = 0; i < row_size; ++i) {
+		for (auto j = 0; j < col_size; ++j) {
+			sorted_freq[i][j] = frequency_vector[sort_order[i]][sort_order[j]];
 		}
 	}
-	return true;
+	return sorted_freq;
 }
 
-bool Algorithm::main_procedure(Graph&)
+
+bool Algorithm::main_procedure(Graph& a, Graph& b)
 {
-	return false;
+	auto** s_freq_a = Algorithm::get_sorted_frequency_vector(a);
+	auto** s_freq_b = Algorithm::get_sorted_frequency_vector(b);
+	const auto row_size = sizeof(*s_freq_a) / sizeof(int*);
+	const auto col_size = sizeof(**s_freq_a) / sizeof(int*);
+	const auto size = a.vertices_num;
+
+	if (!equals(s_freq_a, s_freq_b, row_size, col_size)) return false;
+	return swap_procedure(a, b);
 }
+
+
+
+

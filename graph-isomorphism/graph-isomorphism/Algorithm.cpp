@@ -28,14 +28,24 @@ Algorithm::Algorithm(Graph& a, Graph& b){
 	this->sign_m_a = Algorithm::get_sign_matrix(a);
 	this->sign_m_b = Algorithm::get_sign_matrix(b);
 
-	this->frequency_vector_a = get_frequency_vector(get_lexicographical_order(sign_m_a), sign_m_a);
-	this->frequency_vector_b = get_frequency_vector(get_lexicographical_order(sign_m_b), sign_m_b);
+	auto temp_a = get_lexicographical_order(sign_m_a);
+	auto temp_b = get_lexicographical_order(sign_m_b);
 
-	this->sort_order_a = get_sort_order(frequency_vector_a);
-	this->sort_order_b = get_sort_order(frequency_vector_b);
+	/*Printer::print_vector(temp_a);
+	cout << endl;
+	Printer::print_vector(temp_b);*/
 
-	this->sorted_frequency_a = get_sorted_frequency_vector(frequency_vector_a, sort_order_a);
-	this->sorted_frequency_b = get_sorted_frequency_vector(frequency_vector_b, sort_order_b);
+	this->unique_a_size = temp_a.size();
+	this->unique_b_size = temp_b.size();
+
+	this->frequency_vector_a = get_frequency_vector(temp_a, sign_m_a);
+	this->frequency_vector_b = get_frequency_vector(temp_b, sign_m_b);
+
+	this->sort_order_a = get_sort_order(frequency_vector_a, unique_a_size);
+	this->sort_order_b = get_sort_order(frequency_vector_b, unique_b_size);
+
+	this->sorted_frequency_a = get_sorted_frequency_vector(frequency_vector_a, sort_order_a, unique_a_size);
+	this->sorted_frequency_b = get_sorted_frequency_vector(frequency_vector_b, sort_order_b, unique_b_size);
 
 	this->canon_m_a = get_canonical_form(sort_order_a, sign_m_a);
 	this->canon_m_b = get_canonical_form(sort_order_b, sign_m_b);
@@ -175,9 +185,8 @@ std::vector<element> Algorithm::get_lexicographical_order(element** sign_m) {
 }
 
 
-int* Algorithm::get_sort_order(int** frequency_vector) {
+int* Algorithm::get_sort_order(int** frequency_vector, int row_size) {
 	int* sort_order = new int[size];
-	const auto row_size = sizeof(*frequency_vector) / sizeof(int*);
 
 	for (auto i = 0; i < size; ++i) {
 		sort_order[i] = i;
@@ -284,15 +293,13 @@ int** Algorithm::get_frequency_vector(std::vector<element> lexic_order, element*
 }
 
 
-int** Algorithm::get_sorted_frequency_vector(int** frequency_vector,int* sort_order) {
-	const auto row_size = sizeof(*frequency_vector) / sizeof(int*);
-	const auto col_size = sizeof(**frequency_vector) / sizeof(int*);
+int** Algorithm::get_sorted_frequency_vector(int** frequency_vector,int* sort_order, int row_size) {
 	int** sorted_freq = new int* [row_size];
 
-	for (auto i = 0; i < row_size; ++i) sorted_freq[i] = new int[col_size];
+	for (auto i = 0; i < row_size; ++i) sorted_freq[i] = new int[size];
 
 	for (auto i = 0; i < row_size; ++i) {
-		for (auto j = 0; j < col_size; ++j) {
+		for (auto j = 0; j < size; ++j) {
 			sorted_freq[i][j] = frequency_vector[sort_order[i]][sort_order[j]];
 		}
 	}
@@ -302,9 +309,6 @@ int** Algorithm::get_sorted_frequency_vector(int** frequency_vector,int* sort_or
 
 bool Algorithm::main_procedure()
 {
-	const auto row_size = sizeof(*sorted_frequency_a) / sizeof(int*);
-	const auto col_size = sizeof(**sorted_frequency_a) / sizeof(int**);
-
-	if (!equals(sorted_frequency_b, sorted_frequency_b, row_size, col_size)) return false;
+	if (!equals(sorted_frequency_b, sorted_frequency_b, unique_a_size, size)) return false;
 	return swap_procedure();
 }

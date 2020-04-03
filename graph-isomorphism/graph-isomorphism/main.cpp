@@ -29,4 +29,5 @@ int main() {
 	Algorithm solver(graph_a, graph_b);
 	if (solver.is_isomorphic()) cout << "YES\n";
 	else cout << "NO\n";
+	cout << "OK";
 }

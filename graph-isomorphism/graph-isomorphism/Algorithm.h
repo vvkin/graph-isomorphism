@@ -7,7 +7,8 @@ public:
 	template<typename T>
 	static T* create_a(T, int);
 	static element** get_sign_matrix(Graph&);
-	bool is_isomorphic(Graph&, Graph&);
+	static bool is_isomorphic(Graph&, Graph&);
+	static std::vector<element> get_lexicographical_order(Graph&);
 private:
 };
 

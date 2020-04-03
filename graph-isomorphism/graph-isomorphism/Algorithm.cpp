@@ -1,6 +1,7 @@
 #include "Algorithm.h"
 #include <queue>
 #include <set>
+#include "Printer.h"
 
 using std::queue;
 using std::set;
@@ -124,6 +125,31 @@ element** Algorithm::get_sign_matrix(Graph& graph) {
 bool Algorithm::is_isomorphic(Graph& A, Graph& B) {
 	//Call all function to check are graphs isomorphic
 	return true;
+}
+
+
+std::vector<element> Algorithm::get_lexicographical_order(Graph& graph)
+{
+	struct custom_compare final {
+		bool operator () (const element a, const element b) const {
+			auto a_sign = (a.sign) ? 1 : -1;
+			auto b_sign = (b.sign) ? 1 : -1;
+			return(a.distance * a_sign > b.distance* b_sign);
+		}
+	};
+
+	set<element, custom_compare> unique_elements;
+
+	auto** sign_m = Algorithm::get_sign_matrix(graph);
+	const int size = graph.vertices_num;
+
+	for (auto i = 0; i < size; ++i) {
+		for (auto j = 0; j < size; ++j) {
+			unique_elements.insert(sign_m[i][j]);
+		}
+	}
+
+	return (vector<element>(unique_elements.begin(), unique_elements.end()));
 }
 
 

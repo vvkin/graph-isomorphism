@@ -15,4 +15,8 @@ int main() {
 	Printer::print_vector_array(result_2.path, 8);
 	const auto matrix = Algorithm::get_sign_matrix(graph);
 	Printer::print_matrix(matrix, 8);
+
+	auto unique_el = Algorithm::get_lexicographical_order(graph);
+	Printer::print_vector(unique_el);
+	cout << unique_el.size();
 }

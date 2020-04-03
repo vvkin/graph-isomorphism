@@ -3,19 +3,38 @@
 
 class Algorithm{
 public:
-	static bfs_result bfs(Graph&, int);
-	static element** get_sign_matrix(Graph&);
-	static bool is_isomorphic(Graph&, Graph&);
-	static std::vector<element> get_lexicographical_order(Graph&);
-	static int* get_sort_order(Graph&);
-	static element** get_canonical_form(Graph&);
-	static bool swap_procedure(Graph&, Graph&);
+	Algorithm(Graph&, Graph&);
+	bool is_isomorphic();
+ 
 private:
-	static int** get_sorted_frequency_vector(Graph&);
-	static bool main_procedure(Graph&, Graph&);
+	int** get_sorted_frequency_vector(int**, int*);
+	bool main_procedure();
 	template<typename T>
 	static T* create_a(T, int);
-	static int** get_frequency_vector(Graph&);
+	int** get_frequency_vector(std::vector<element>, element**);
+	static bfs_result bfs(Graph&, int);
+	static element** get_sign_matrix(Graph&);
+	bool swap_procedure();
+	int* get_sort_order(int**);
+	element** get_canonical_form(int*, element**);
+	std::vector<element> get_lexicographical_order(element**);
+
+	//
+	Graph a;
+	Graph b;
+	int size;
+	int** frequency_vector_a;
+	int** frequency_vector_b;
+	int** sorted_frequency_a;
+	int** sorted_frequency_b;
+	int* sort_order_a;
+	int* sort_order_b;
+	element** canon_m_a;
+	element** canon_m_b;
+	element** sign_m_a;
+	element** sign_m_b;
+
+
 };
 
 

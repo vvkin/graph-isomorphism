@@ -24,6 +24,9 @@ int main() {
 	Printer::print_matrix(sorted_sign_m_a, 8, 8);
 	Printer::print_matrix(sorted_sign_m_b, 8, 8);
 	Algorithm::swap_procedure(graph_a, graph_b);*/
-	if (Algorithm::is_isomorphic(graph_a, graph_b)) cout << "Graphs are isomorphic\n";
-	else cout << "Graphs are not isomorphic";
+	//if (Algorithm::is_isomorphic(graph_a, graph_b)) cout << "Graphs are isomorphic\n";
+	//else cout << "Graphs are not isomorphic";
+	Algorithm solver(graph_a, graph_b);
+	if (solver.is_isomorphic()) cout << "YES\n";
+	else cout << "NO\n";
 }

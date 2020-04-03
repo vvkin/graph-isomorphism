@@ -20,6 +20,27 @@ T* Algorithm::create_a(const T filler, const int size) {
 	return array;
 }
 
+Algorithm::Algorithm(Graph& a, Graph& b){
+	this->a = Graph(a);
+	this->b = Graph(b);
+	this->size = a.vertices_num;
+
+	this->sign_m_a = Algorithm::get_sign_matrix(a);
+	this->sign_m_b = Algorithm::get_sign_matrix(b);
+
+	this->frequency_vector_a = get_frequency_vector(get_lexicographical_order(sign_m_a), sign_m_a);
+	this->frequency_vector_b = get_frequency_vector(get_lexicographical_order(sign_m_b), sign_m_b);
+
+	this->sort_order_a = get_sort_order(frequency_vector_a);
+	this->sort_order_b = get_sort_order(frequency_vector_b);
+
+	this->sorted_frequency_a = get_sorted_frequency_vector(frequency_vector_a, sort_order_a);
+	this->sorted_frequency_b = get_sorted_frequency_vector(frequency_vector_b, sort_order_b);
+
+	this->canon_m_a = get_canonical_form(sort_order_a, sign_m_a);
+	this->canon_m_b = get_canonical_form(sort_order_b, sign_m_b);
+}
+
 bfs_result Algorithm::bfs(Graph& graph, const int start) {
 
 	auto* visit = create_a(false, graph.vertices_num);
@@ -127,12 +148,13 @@ element** Algorithm::get_sign_matrix(Graph& graph) {
 	return sign_m;
 }
 
-bool Algorithm::is_isomorphic(Graph& A, Graph& B) {
-	return (Algorithm::main_procedure(A, B));
+bool Algorithm::is_isomorphic() {
+	return main_procedure();
 }
 
 
-std::vector<element> Algorithm::get_lexicographical_order(Graph& graph) {
+std::vector<element> Algorithm::get_lexicographical_order(element** sign_m) {
+	
 	auto compare = [](const element& lhs, const element& rhs) {
 		if (rhs.number() < 0 && lhs.number() < 0) {
 			if (lhs.distance == rhs.distance) return (abs(lhs.number()) < abs(rhs.number()));
@@ -142,9 +164,6 @@ std::vector<element> Algorithm::get_lexicographical_order(Graph& graph) {
 	};
 	
 	set<element, decltype(compare)> unique_elements(compare);
-
-	auto** sign_m = Algorithm::get_sign_matrix(graph);
-	const auto size = graph.vertices_num;
 
 	for (auto i = 0; i < size; ++i) {
 		for (auto j = 0; j < size; ++j) {
@@ -156,10 +175,8 @@ std::vector<element> Algorithm::get_lexicographical_order(Graph& graph) {
 }
 
 
-int* Algorithm::get_sort_order(Graph& graph) {
-	const auto size = graph.vertices_num;
+int* Algorithm::get_sort_order(int** frequency_vector) {
 	int* sort_order = new int[size];
-	auto** frequency_vector = Algorithm::get_frequency_vector(graph);
 	const auto row_size = sizeof(*frequency_vector) / sizeof(int*);
 
 	for (auto i = 0; i < size; ++i) {
@@ -184,14 +201,15 @@ int* Algorithm::get_sort_order(Graph& graph) {
 		}
 	}
 
+	delete[] col_num;
+
 	return sort_order;
+
+	delete[] sort_order;
 }
 
-element** Algorithm::get_canonical_form(Graph& graph)
+element** Algorithm::get_canonical_form(int* sort_order, element** sign_m)
 {
-	auto sort_order = Algorithm::get_sort_order(graph);
-	auto** sign_m = Algorithm::get_sign_matrix(graph);
-	auto const size = graph.vertices_num;
 	element** sorted_sign_m = new element * [size];
 
 	for (auto i = 0; i < size; ++i)
@@ -218,13 +236,8 @@ bool equals(T** lhs, T** rhs, const int row_size, const int col_size) {
 	return true;
 }
 
- bool Algorithm::swap_procedure(Graph& a, Graph& b) {
-
-	auto** canon_m_a = Algorithm::get_canonical_form(a);
-	auto** canon_m_b = Algorithm::get_canonical_form(b);
+ bool Algorithm::swap_procedure() {
 	auto const size = a.vertices_num;
-	auto* perm_b = Algorithm::get_sort_order(b);
-
 	for (auto i = 0; i < size; ++i) {
 		for (auto j = 0; j < size; ++j) {
 			if (canon_m_a[i][j] != canon_m_b[i][j]) {
@@ -240,25 +253,17 @@ bool equals(T** lhs, T** rhs, const int row_size, const int col_size) {
 							swap(canon_m_b[h][j], canon_m_b[h][k]);
 						}
 						swap(canon_m_b[j], canon_m_b[k]);
-						swap(perm_b[j], perm_b[k]);
+						swap(sort_order_b[j], sort_order_b[k]);
 					}
 				}
 			}
 		}
 	}
 	return equals(canon_m_a, canon_m_b, size, size);
-
-	/*Printer::print_matrix(canon_m_a, 8, 8);
-	Printer::print_matrix(canon_m_b, 8, 8);
-	Printer::print_array(get_sort_order(a), 8);
-	Printer::print_array(perm_b, 8);*/
 }
 
-int** Algorithm::get_frequency_vector(Graph& graph)
+int** Algorithm::get_frequency_vector(std::vector<element> lexic_order, element** sign_m)
 {
-	auto lexic_order = Algorithm::get_lexicographical_order(graph);
-	auto** sign_m = Algorithm::get_sign_matrix(graph);
-	const auto size = graph.vertices_num;
 	int** frequency_vector = new int* [lexic_order.size()];
 
 	for(auto i = 0; i < size; ++i) frequency_vector[i] = new int[size];
@@ -279,9 +284,7 @@ int** Algorithm::get_frequency_vector(Graph& graph)
 }
 
 
-int** Algorithm::get_sorted_frequency_vector(Graph& graph) {
-	auto** frequency_vector = Algorithm::get_frequency_vector(graph);
-	auto sort_order = Algorithm::get_sort_order(graph);
+int** Algorithm::get_sorted_frequency_vector(int** frequency_vector,int* sort_order) {
 	const auto row_size = sizeof(*frequency_vector) / sizeof(int*);
 	const auto col_size = sizeof(**frequency_vector) / sizeof(int*);
 	int** sorted_freq = new int* [row_size];
@@ -297,18 +300,11 @@ int** Algorithm::get_sorted_frequency_vector(Graph& graph) {
 }
 
 
-bool Algorithm::main_procedure(Graph& a, Graph& b)
+bool Algorithm::main_procedure()
 {
-	auto** s_freq_a = Algorithm::get_sorted_frequency_vector(a);
-	auto** s_freq_b = Algorithm::get_sorted_frequency_vector(b);
-	const auto row_size = sizeof(*s_freq_a) / sizeof(int*);
-	const auto col_size = sizeof(**s_freq_a) / sizeof(int*);
-	const auto size = a.vertices_num;
+	const auto row_size = sizeof(*sorted_frequency_a) / sizeof(int*);
+	const auto col_size = sizeof(**sorted_frequency_a) / sizeof(int**);
 
-	if (!equals(s_freq_a, s_freq_b, row_size, col_size)) return false;
-	return swap_procedure(a, b);
+	if (!equals(sorted_frequency_b, sorted_frequency_b, row_size, col_size)) return false;
+	return swap_procedure();
 }
-
-
-
-

@@ -82,14 +82,14 @@ element** Algorithm::get_sign_matrix(Graph& graph) {
 			auto new_graph = graph.delete_edge(i, j);
 			const auto start = bfs(new_graph, i);
 			const auto end = bfs(new_graph, j);
-
+			
 			object.distance = start.distance[j];
 
 			set<int> pair_graph;
 			for (auto k = 0; k < new_graph.vertices_num; ++k) {
 				if (start.path[k].back() != end.path[k].back() || int(start.path[k].size()
-					+ end.path[k].size()) != object.distance) continue;
-
+					+ end.path[k].size() - 2) != object.distance) continue;
+				
 				for (auto& item : start.path[k]) {
 					if (pair_graph.find(item) == pair_graph.end()) {
 						pair_graph.insert(item);
@@ -113,6 +113,8 @@ element** Algorithm::get_sign_matrix(Graph& graph) {
 				}
 			}
 
+			object.edges /= 2;
+			
 			delete[] start.path; delete start.distance;
 			delete[] end.path; delete[] end.distance;
 
@@ -130,18 +132,15 @@ bool Algorithm::is_isomorphic(Graph& A, Graph& B) {
 
 std::vector<element> Algorithm::get_lexicographical_order(Graph& graph)
 {
-	struct custom_compare final {
-		bool operator () (const element a, const element b) const {
-			auto a_sign = (a.sign) ? 1 : -1;
-			auto b_sign = (b.sign) ? 1 : -1;
-			return(a.distance * a_sign > b.distance* b_sign);
-		}
+	auto compare = [](const element& lhs, const element& rhs) {
+		return lhs.sign == rhs.sign ? abs(lhs.number()) < 
+			abs(rhs.number()) : lhs.number() < rhs.number();
 	};
-
-	set<element, custom_compare> unique_elements;
+	
+	set<element, decltype(compare)> unique_elements(compare);
 
 	auto** sign_m = Algorithm::get_sign_matrix(graph);
-	const int size = graph.vertices_num;
+	const auto size = graph.vertices_num;
 
 	for (auto i = 0; i < size; ++i) {
 		for (auto j = 0; j < size; ++j) {

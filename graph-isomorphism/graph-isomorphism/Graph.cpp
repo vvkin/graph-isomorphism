@@ -32,10 +32,11 @@ Graph Graph::delete_edge(const int begin, const int end){
 	auto iterator = 0;
 
 	for (auto i = 0; i < this->edges_num; ++i) {
-		if (this->edges_list[i].out == begin && this->edges_list[i].in == end) continue;
+		if (this->edges_list[i].out == begin && this->edges_list[i].in == end ||
+			this->edges_list[i].out == end && this->edges_list[i].in == begin) continue;
 		new_edges_list[iterator] = this->edges_list[i]; ++iterator;
 	}
-
+	
 	return Graph(this->vertices_num, iterator, new_edges_list);
 }
 

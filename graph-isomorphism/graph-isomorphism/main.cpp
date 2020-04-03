@@ -6,9 +6,10 @@
 
 int main() {
 	auto graph = Parser::parse("graph_a.txt");
-	auto new_graph = graph.delete_edge(0, 1);
-	const auto result_1 = Algorithm::bfs(graph, 0);
-	const auto result_2 = Algorithm::bfs(graph, 1);
+	auto new_graph = graph.delete_edge(3, 0);
+	new_graph.get_info();
+	const auto result_1 = Algorithm::bfs(new_graph, 3);
+	const auto result_2 = Algorithm::bfs(new_graph, 0);
 	Printer::print_array(result_1.distance, 8);
 	Printer::print_vector_array(result_1.path, 8);
 	Printer::print_array(result_2.distance, 8);

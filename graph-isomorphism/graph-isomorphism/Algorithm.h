@@ -3,7 +3,7 @@
 
 class Algorithm
 {
-private:
+public:
 	static bfs_result bfs(Graph&, int);
 	template<typename T>
 	static T* create_a(T, int);

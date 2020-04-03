@@ -59,12 +59,12 @@ vector<vector<int> > Graph::create_adjacency_list(){
 }
 
 
-int** Graph::get_adjacency_matrix() {
-	int** adj_m = this->create_m(0);
+int** Graph::create_adjacency_matrix() {
+	auto** adj_m = this->create_m(0);
 	for (auto i = 0; i < this->edges_num; ++i) {
-		if (this->edges_list[i].out == this->edges_list[i].in) continue;
-		adj_m[this->edges_list[i].out][this->edges_list[i].in] = 1;
+		if (this->edges_list[i].in == this->edges_list[i].out) continue;
 		adj_m[this->edges_list[i].in][this->edges_list[i].out] = 1;
+		adj_m[this->edges_list[i].out][this->edges_list[i].in] = 1;
 	}
 	return adj_m;
 }

@@ -15,7 +15,7 @@ public:
 	Graph delete_edge(int, int);
 	void get_info();
 	std::vector<std::vector<int>> create_adjacency_list();
-	int** get_adjacency_matrix();
+	int** create_adjacency_matrix();
 	template<typename T>
 	T** create_m(T);
 

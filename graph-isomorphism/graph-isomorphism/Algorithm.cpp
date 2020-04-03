@@ -51,7 +51,7 @@ bfs_result Algorithm::bfs(Graph& graph, const int start) {
 			path[i] = {};
 		}
 		else {
-			for (auto at = prev[i]; at != start;) {
+			for (auto at = i; at != start;) {
 				path[i].push_back(at);
 				at = prev[at];
 			}
@@ -69,7 +69,7 @@ bfs_result Algorithm::bfs(Graph& graph, const int start) {
 
 element** Algorithm::get_sign_matrix(Graph& graph) {
 	auto** sign_m = graph.create_m(element());
-	auto** adj_m = graph.get_adjacency_matrix();
+	auto** adj_m = graph.create_adjacency_matrix();
 	auto adj_l = graph.create_adjacency_list();
 
 	for (auto i = 0; i < graph.vertices_num; ++i){

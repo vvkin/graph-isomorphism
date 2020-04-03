@@ -1,7 +1,14 @@
 #pragma once
 #include <vector>
+#include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <iostream>
+
+using std::cout;
+using std::endl;
+using std::setw;
+using std::vector;
 
 const int infinity = INT16_MAX;
 
@@ -19,7 +26,6 @@ struct Edge {
 	int out;
 };
 
-
 struct element {
 	element() = default;
 
@@ -28,19 +34,13 @@ struct element {
 
 	int number() const {
 		std::stringstream in;
-		in << (sign == plus ? "+" : "-");
+		in << (sign == sign::plus ? "+" : "-");
 		in << distance << vertices << edges;
 		return stoi(in.str());
 	}
 
 	bool operator!=(const element& other) const {
 		return this->number() != other.number();
-	}
-
-	std::ostream& operator<<(std::ostream& out) const {
-		out << (this->sign == plus ? "+" : "-") << this->distance
-			<< "." << this->vertices << "." << this->edges;
-		return out;
 	}
 	
 	sign sign;

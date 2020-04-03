@@ -6,6 +6,7 @@
 using std::queue;
 using std::set;
 using std::vector;
+using std::swap;
 
 
 template<typename T>
@@ -133,8 +134,7 @@ bool Algorithm::is_isomorphic(Graph& A, Graph& B) {
 std::vector<element> Algorithm::get_lexicographical_order(Graph& graph)
 {
 	auto compare = [](const element& lhs, const element& rhs) {
-		return lhs.sign == rhs.sign ? abs(lhs.number()) < 
-			abs(rhs.number()) : lhs.number() < rhs.number();
+		return lhs.number() < rhs.number();
 	};
 	
 	set<element, decltype(compare)> unique_elements(compare);
@@ -151,9 +151,36 @@ std::vector<element> Algorithm::get_lexicographical_order(Graph& graph)
 	return (vector<element>(unique_elements.begin(), unique_elements.end()));
 }
 
+bool equal(const element** lhs, const element** rhs, const int size) {
+	for (auto i = 0; i < size; ++i) {
+		for (auto j = 0; j < size; ++j) {
+			if (lhs[i][j] != rhs[i][j])
+				return false;
+		}
+	}
+	return true;
+}
 
-
-
-
-
-
+void swap_procedure(element** canon_m_a, element** canon_m_b, int* perm_b, const int vertex) {
+	for (auto i = 0; i < vertex; ++i) {
+		for (auto j = 0; j < vertex; ++j) {
+			if (canon_m_a[i][j] != canon_m_b[i][j]) {
+				for (auto k = j + 1; k < vertex; ++k) {
+					auto suitable = true;
+					for (auto h = 0; h <= i; ++h) {
+						if (canon_m_a[h][j] != canon_m_b[h][k]) {
+							suitable = false; break;
+						}
+					}
+					if (suitable) {
+						for (auto h = 0; h < vertex; ++h) {
+							swap(canon_m_b[h][j], canon_m_b[h][k]);
+						}
+						swap(canon_m_b[j], canon_m_b[k]);
+						swap(perm_b[j], perm_b[k]);
+					}
+				}
+			}
+		}
+	}
+}

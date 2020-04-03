@@ -15,9 +15,15 @@ int main() {
 	Printer::print_array(result_2.distance, 8);
 	Printer::print_vector_array(result_2.path, 8);
 	const auto matrix = Algorithm::get_sign_matrix(graph);
-	Printer::print_matrix(matrix, 8);
+	Printer::print_matrix(matrix, 8,8);
 
 	auto unique_el = Algorithm::get_lexicographical_order(graph);
 	Printer::print_vector(unique_el);
-	cout << unique_el.size();
+	//cout << unique_el.size();
+
+	auto* sort_order = Algorithm::get_sort_order(graph);
+	Printer::print_array(sort_order, 8);
+	cout << endl;
+	auto** sorted_sign_m = Algorithm::get_canonical_form(graph);
+	Printer::print_matrix(sorted_sign_m, 8, 8);
 }

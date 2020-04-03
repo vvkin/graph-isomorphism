@@ -8,7 +8,8 @@ public:
 	static void print_vector_array(std::vector<T>*,const int);
 	template<typename T>
 	static void print_array(T*, const int);
-	static void print_matrix(element**, const int);
+	template<typename T>
+	static void print_matrix(T**, const int, const int);
 	template<typename T>
 	static void print_vector(vector<T>);
 };
@@ -43,10 +44,10 @@ inline void Printer::print_vector(vector<T> vec)
 	}
 	cout << "\n";
 }
-
-inline void Printer::print_matrix(element** matrix, const int size) {
-	for (auto i = 0; i < size; ++i) {
-		for (auto j = 0; j < size; ++j) {
+template<typename T>
+inline void Printer::print_matrix(T** matrix, const int row_size, const int col_size) {
+	for (auto i = 0; i < row_size; ++i) {
+		for (auto j = 0; j < col_size; ++j) {
 			cout << setw(8) << matrix[i][j];
 		} cout << endl;
 	} cout << endl;

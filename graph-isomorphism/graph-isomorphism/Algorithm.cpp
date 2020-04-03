@@ -2,6 +2,8 @@
 #include <queue>
 #include <set>
 #include "Printer.h"
+#include <iostream>
+#include <string>
 
 using std::queue;
 using std::set;
@@ -131,8 +133,7 @@ bool Algorithm::is_isomorphic(Graph& A, Graph& B) {
 }
 
 
-std::vector<element> Algorithm::get_lexicographical_order(Graph& graph)
-{
+std::vector<element> Algorithm::get_lexicographical_order(Graph& graph) {
 	auto compare = [](const element& lhs, const element& rhs) {
 		if (rhs.number() < 0 && lhs.number() < 0) {
 			if (lhs.distance == rhs.distance) return (abs(lhs.number()) < abs(rhs.number()));
@@ -155,21 +156,84 @@ std::vector<element> Algorithm::get_lexicographical_order(Graph& graph)
 	return (vector<element>(unique_elements.begin(), unique_elements.end()));
 }
 
-bool equal(const element** lhs, const element** rhs, const int size) {
+
+int* Algorithm::get_sort_order(Graph& graph) {
+	auto lexic_order = Algorithm::get_lexicographical_order(graph);
+	auto** sign_m = Algorithm::get_sign_matrix(graph);
+	const auto size = graph.vertices_num;
+	int** frequency_vector = new int* [lexic_order.size()];
+	int* sort_order = new int[size];
+
 	for (auto i = 0; i < size; ++i) {
-		for (auto j = 0; j < size; ++j) {
-			if (lhs[i][j] != rhs[i][j])
-				return false;
+		frequency_vector[i] = new int[size];
+		sort_order[i] = i;
+	}
+	
+	for (auto i = 0; i < lexic_order.size(); ++i)
+		for (auto j = 0; j < size; ++j)
+			frequency_vector[i][j] = 0;
+
+	for (auto k = 0; k < lexic_order.size(); ++k) {
+		for (auto i = 0; i < size; ++i) {
+			for (auto j = 0; j < size; ++j) {
+				if (sign_m[i][j].number() == lexic_order[k].number())
+					++frequency_vector[k][i];
+			}
 		}
 	}
-	return true;
+
+	std::string* col_num = new std::string[size];
+	for (auto i = 0; i < size; ++i) col_num[i] = "";
+
+	for (auto j = 0; j < size; ++j) {
+		for (auto i = 0; i < lexic_order.size(); ++i) {
+			col_num[j] += std::to_string(frequency_vector[i][j]);
+		}
+	}
+
+	for (auto i = 0; i < size - 1; ++i) {
+		for (auto j = 0; j < size - i - 1; ++j) {
+			if (col_num[j] > col_num[j + 1]) {
+				swap(col_num[j], col_num[j + 1]);
+				swap(sort_order[j], sort_order[j + 1]);
+			}
+		}
+	}
+
+	return sort_order;
 }
 
-void swap_procedure(element** canon_m_a, element** canon_m_b, int* perm_b, const int vertex) {
-	for (auto i = 0; i < vertex; ++i) {
-		for (auto j = 0; j < vertex; ++j) {
+element** Algorithm::get_canonical_form(Graph& graph)
+{
+	auto sort_order = Algorithm::get_sort_order(graph);
+	auto** sign_m = Algorithm::get_sign_matrix(graph);
+	auto const size = graph.vertices_num;
+	element** sorted_sign_m = new element * [size];
+
+	for (auto i = 0; i < size; ++i)
+		sorted_sign_m[i] = new element[size];
+	
+	for (auto i = 0; i < size; ++i) {
+		for (auto j = 0; j < size; ++j) {
+			sorted_sign_m[i][j] = sign_m[sort_order[i]][sort_order[j]];
+		}
+	}
+	
+	return sorted_sign_m;
+}
+
+
+void Algorithm::swap_procedure(Graph& a, Graph& b) {
+
+	auto** canon_m_a = Algorithm::get_canonical_form(a);
+	auto** canon_m_b = Algorithm::get_canonical_form(b);
+	auto const size = a.vertices_num;
+	auto* perm_b = Algorithm::get_sort_order(b);
+
+	for (auto i = 0; i < size; ++i) {
+		for (auto j = 0; j < size; ++j) {
 			if (canon_m_a[i][j] != canon_m_b[i][j]) {
-				for (auto k = j + 1; k < vertex; ++k) {
+				for (auto k = j + 1; k < size; ++k) {
 					auto suitable = true;
 					for (auto h = 0; h <= i; ++h) {
 						if (canon_m_a[h][j] != canon_m_b[h][k]) {
@@ -177,7 +241,7 @@ void swap_procedure(element** canon_m_a, element** canon_m_b, int* perm_b, const
 						}
 					}
 					if (suitable) {
-						for (auto h = 0; h < vertex; ++h) {
+						for (auto h = 0; h < size; ++h) {
 							swap(canon_m_b[h][j], canon_m_b[h][k]);
 						}
 						swap(canon_m_b[j], canon_m_b[k]);

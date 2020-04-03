@@ -134,7 +134,11 @@ bool Algorithm::is_isomorphic(Graph& A, Graph& B) {
 std::vector<element> Algorithm::get_lexicographical_order(Graph& graph)
 {
 	auto compare = [](const element& lhs, const element& rhs) {
-		return lhs.number() < rhs.number();
+		if (rhs.number() < 0 && lhs.number() < 0) {
+			if (lhs.distance == rhs.distance) return (abs(lhs.number()) < abs(rhs.number()));
+			else return (lhs.distance > rhs.distance);
+		}
+		else return (lhs.number() < rhs.number());
 	};
 	
 	set<element, decltype(compare)> unique_elements(compare);

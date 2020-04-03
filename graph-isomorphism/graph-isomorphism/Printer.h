@@ -30,9 +30,9 @@ inline void Printer::print_vector_array(std::vector<T>* array, const int size) {
 }
 
 template<typename T>
-inline void Printer::print_array(T* array, const int size) {
+void Printer::print_array(T* array, const int size) {
 	for (auto i = 0; i < size; ++i) {
-		cout << array[i] << ", ";
+		cout << array[i] + 1 << ", ";
 	} cout << endl;
 }
 

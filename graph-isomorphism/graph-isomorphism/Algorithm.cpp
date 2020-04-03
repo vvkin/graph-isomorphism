@@ -236,6 +236,10 @@ void Algorithm::swap_procedure(Graph& a, Graph& b) {
 			}
 		}
 	}
+	Printer::print_matrix(canon_m_a, 8, 8);
+	Printer::print_matrix(canon_m_b, 8, 8);
+	Printer::print_array(get_sort_order(a), 8);
+	Printer::print_array(perm_b, 8);
 }
 
 int** Algorithm::get_frequency_vector(Graph& graph)
@@ -261,6 +265,16 @@ int** Algorithm::get_frequency_vector(Graph& graph)
 	}
 
 	return frequency_vector;
+}
+
+bool equals(element** lhs, element** rhs, const int size) {
+	for (auto i = 0; i < size; ++i) {
+		for (auto j = 0; j < size; ++j) {
+			if (lhs[i][j] != rhs[i][j])
+				return false;
+		}
+	}
+	return true;
 }
 
 bool Algorithm::main_procedure(Graph&)

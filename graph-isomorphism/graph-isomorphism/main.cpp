@@ -5,25 +5,23 @@
 
 
 int main() {
-	auto graph = Parser::parse("graph_a.txt");
-	auto new_graph = graph.delete_edge(3, 0);
-	new_graph.get_info();
-	const auto result_1 = Algorithm::bfs(new_graph, 3);
-	const auto result_2 = Algorithm::bfs(new_graph, 0);
-	Printer::print_array(result_1.distance, 8);
-	Printer::print_vector_array(result_1.path, 8);
-	Printer::print_array(result_2.distance, 8);
-	Printer::print_vector_array(result_2.path, 8);
-	const auto matrix = Algorithm::get_sign_matrix(graph);
-	Printer::print_matrix(matrix, 8,8);
-
-	auto unique_el = Algorithm::get_lexicographical_order(graph);
-	Printer::print_vector(unique_el);
-	//cout << unique_el.size();
-
-	auto* sort_order = Algorithm::get_sort_order(graph);
-	Printer::print_array(sort_order, 8);
-	cout << endl;
-	auto** sorted_sign_m = Algorithm::get_canonical_form(graph);
-	Printer::print_matrix(sorted_sign_m, 8, 8);
+	auto graph_a = Parser::parse("graph_a.txt");
+	auto graph_b = Parser::parse("graph_b.txt");
+	const auto matrix_a = Algorithm::get_sign_matrix(graph_a);
+	const auto matrix_b = Algorithm::get_sign_matrix(graph_b);
+	Printer::print_matrix(matrix_a, 8,8);
+	Printer::print_matrix(matrix_b, 8, 8);
+	const auto unique_elements_a = Algorithm::get_lexicographical_order(graph_a);
+	const auto unique_elements_b = Algorithm::get_lexicographical_order(graph_b);
+	Printer::print_vector(unique_elements_a);
+	Printer::print_vector(unique_elements_b);
+	auto* sort_order_a = Algorithm::get_sort_order(graph_a);
+	auto* sort_order_b = Algorithm::get_sort_order(graph_b);
+	Printer::print_array(sort_order_a, 8);
+	Printer::print_array(sort_order_b, 8);
+	auto** sorted_sign_m_a = Algorithm::get_canonical_form(graph_a);
+	auto** sorted_sign_m_b = Algorithm::get_canonical_form(graph_b);
+	Printer::print_matrix(sorted_sign_m_a, 8, 8);
+	Printer::print_matrix(sorted_sign_m_b, 8, 8);
+	Algorithm::swap_procedure(graph_a, graph_b);
 }
